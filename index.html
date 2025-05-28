@@ -114,30 +114,31 @@
             align-items: center;
             justify-content: space-between;
             gap: 16px;
+            flex-wrap: wrap;
         }
         .timezone-info {
-            flex: 1 1 0;
             min-width: 0;
-            display: flex;
-            flex-direction: column;
-            max-width: 220px;
-        }
-        .timezone-display,
-        .timezone-select {
-            width: 100%;
-            min-width: 0;
-            box-sizing: border-box;
-        }
-        .timezone-label {
-            font-size: 15px;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 4px;
+            flex: 1 1 120px;
         }
         .timezone-display {
             font-size: 20px;
             font-weight: 600;
             color: var(--text-primary);
+            word-break: break-all;
+            overflow-wrap: anywhere;
+        }
+        @media (max-width: 500px) {
+            .timezone-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .change-button {
+                align-self: flex-end;
+            }
+            .timezone-display {
+                font-size: 17px;
+            }
         }
         .change-button {
             background: var(--ios-secondary-gray);
@@ -193,7 +194,6 @@
             padding: 20px;
             border: 1px solid var(--ios-separator);
         }
-        /* --- IMPROVED EVENT CARD LAYOUT --- */
         .event-content {
             display: flex;
             align-items: flex-end;
@@ -301,7 +301,7 @@
             <span id="themeText">Light</span>
         </button>
         <div class="header">
-            <h1>Family Dynasty Times</h1>
+            <h1>Family Dynasty Reset</h1>
             <p>Track server reset times for The Godfather: Family Dynasty</p>
             <div class="note">All server events run on UTC time</div>
         </div>
@@ -327,9 +327,8 @@
                 Plan your gameplay accordingly.
             </p>
             <p class="signature">
-                This tool is a reference only — always double-check times <br>
-                in-game to be sure.<br>
-                Created by sangreal for [MØB] Worldwide Mob · 102-3
+                This tool is a reference only — always double-check times in-game to be sure.<br>
+                Created by Sangreal for [MØB] Worldwide Mob · 102-3
             </p>
         </div>
     </div>
@@ -340,10 +339,10 @@
             { title: 'License Refresh', utcTime: '08:00 UTC', time: '08:00' },
             { title: 'NG Bonus', utcTime: '22:00 UTC', time: '22:00' },
             {
-                title: 'FCL / KCL events',
+                title: 'FCL/KCL events',
                 utcTime: '14:00 UTC | 21:00 UTC',
                 times: ['14:00', '21:00'],
-                days: 'Tue | Thu | Sat',
+                days: 'Tue, Thu, Sat',
                 isSpecial: true
             }
         ];
@@ -392,69 +391,55 @@
         themeToggle.addEventListener('click', toggleTheme);
 
         // --- Timezone dropdown logic ---
-        function init() {
-            initTheme();
-            if (state.selectedTimezone !== 'auto') {
-                state.userTimezone = state.selectedTimezone;
-            }
-            updateTimezoneDisplay();
-            populateTimezoneOptions();
-            renderEvents();
-            setupEventListeners();
-            elements.timezoneSelect.value = state.selectedTimezone;
-        }
-        function setupEventListeners() {
-            elements.changeBtn.addEventListener('click', toggleTimezoneSelect);
-            elements.timezoneSelect.addEventListener('change', handleTimezoneChange);
-            elements.timezoneSelect.addEventListener('blur', hideTimezoneSelect);
-        }
-        function toggleTimezoneSelect() {
-            if (state.isSelectMode) {
-                hideTimezoneSelect();
-            } else {
-                elements.timezoneDisplay.classList.add('hidden');
-                elements.timezoneSelect.classList.remove('hidden');
-                state.isSelectMode = true;
-                elements.changeBtn.setAttribute('aria-expanded', 'true');
-                setTimeout(() => {
-                    elements.timezoneSelect.focus();
-                    elements.timezoneSelect.click();
-                }, 0);
-            }
-        }
-        function hideTimezoneSelect() {
-            elements.timezoneDisplay.classList.remove('hidden');
-            elements.timezoneSelect.classList.add('hidden');
-            state.isSelectMode = false;
-            elements.changeBtn.setAttribute('aria-expanded', 'false');
-        }
-        function handleTimezoneChange(e) {
-            state.selectedTimezone = e.target.value;
-            localStorage.setItem('selectedTimezone', state.selectedTimezone);
-            if (state.selectedTimezone === 'auto') {
-                state.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            } else {
-                state.userTimezone = state.selectedTimezone;
-            }
-            updateTimezoneDisplay();
-            renderEvents();
-            hideTimezoneSelect();
+        function getTimezoneLabel(tzValue) {
+            const timezones = [
+                { value: 'auto', label: 'Auto-detect (Recommended)' },
+                { value: 'UTC', label: 'UTC' },
+                { value: 'Pacific/Honolulu', label: 'Hawaii' },
+                { value: 'America/Anchorage', label: 'Alaska' },
+                { value: 'America/Los_Angeles', label: 'Pacific Time' },
+                { value: 'America/Denver', label: 'Mountain Time' },
+                { value: 'America/Chicago', label: 'Central Time' },
+                { value: 'America/New_York', label: 'Eastern Time' },
+                { value: 'America/Caracas', label: 'Venezuela' },
+                { value: 'America/Sao_Paulo', label: 'Brazil' },
+                { value: 'Atlantic/Azores', label: 'Azores' },
+                { value: 'Europe/London', label: 'London' },
+                { value: 'Europe/Paris', label: 'Paris/Berlin' },
+                { value: 'Europe/Rome', label: 'Rome' },
+                { value: 'Europe/Athens', label: 'Athens' },
+                { value: 'Europe/Moscow', label: 'Moscow' },
+                { value: 'Europe/Samara', label: 'Samara' },
+                { value: 'Asia/Yekaterinburg', label: 'Yekaterinburg' },
+                { value: 'Asia/Omsk', label: 'Omsk' },
+                { value: 'Asia/Krasnoyarsk', label: 'Krasnoyarsk' },
+                { value: 'Asia/Irkutsk', label: 'Irkutsk' },
+                { value: 'Asia/Yakutsk', label: 'Yakutsk' },
+                { value: 'Asia/Vladivostok', label: 'Vladivostok' },
+                { value: 'Asia/Magadan', label: 'Magadan' },
+                { value: 'Asia/Kamchatka', label: 'Kamchatka' },
+                { value: 'Asia/Dubai', label: 'Dubai' },
+                { value: 'Asia/Karachi', label: 'Pakistan' },
+                { value: 'Asia/Kolkata', label: 'India' },
+                { value: 'Asia/Dhaka', label: 'Bangladesh' },
+                { value: 'Asia/Bangkok', label: 'Thailand' },
+                { value: 'Asia/Shanghai', label: 'China' },
+                { value: 'Asia/Tokyo', label: 'Japan' },
+                { value: 'Asia/Seoul', label: 'South Korea' },
+                { value: 'Australia/Perth', label: 'Perth' },
+                { value: 'Australia/Adelaide', label: 'Adelaide' },
+                { value: 'Australia/Sydney', label: 'Sydney/Melbourne' },
+                { value: 'Pacific/Auckland', label: 'New Zealand' }
+            ];
+            const found = timezones.find(tz => tz.value === tzValue);
+            return found ? found.label : tzValue;
         }
         function updateTimezoneDisplay() {
-            elements.timezoneDisplay.textContent = state.userTimezone;
-        }
-        function getTimezoneOffset(timezone) {
-            if (timezone === 'UTC') return '+00:00';
-            try {
-                const date = new Date();
-                const options = { timeZone: timezone, timeZoneName: 'shortOffset' };
-                const formatter = new Intl.DateTimeFormat('en-US', options);
-                const parts = formatter.formatToParts(date);
-                const offset = parts.find(part => part.type === 'timeZoneName').value;
-                return offset.replace(/^GMT/, '');
-            } catch (error) {
-                return '+00:00';
+            let displayValue = state.userTimezone;
+            if (state.selectedTimezone !== 'auto') {
+                displayValue = getTimezoneLabel(state.selectedTimezone);
             }
+            elements.timezoneDisplay.textContent = displayValue;
         }
         function populateTimezoneOptions() {
             const timezones = [
@@ -508,6 +493,19 @@
                 }
                 elements.timezoneSelect.appendChild(option);
             });
+        }
+        function getTimezoneOffset(timezone) {
+            if (timezone === 'UTC') return '+00:00';
+            try {
+                const date = new Date();
+                const options = { timeZone: timezone, timeZoneName: 'shortOffset' };
+                const formatter = new Intl.DateTimeFormat('en-US', options);
+                const parts = formatter.formatToParts(date);
+                const offset = parts.find(part => part.type === 'timeZoneName').value;
+                return offset.replace(/^GMT/, '');
+            } catch (error) {
+                return '+00:00';
+            }
         }
         // --- iOS clock style time formatting ---
         function convertUTCToLocalParts(utcTime) {
@@ -579,6 +577,55 @@
                 eventCard.style.animationDelay = `${0.1 * index}s`;
                 elements.eventsList.appendChild(eventCard);
             });
+        }
+        function setupEventListeners() {
+            elements.changeBtn.addEventListener('click', toggleTimezoneSelect);
+            elements.timezoneSelect.addEventListener('change', handleTimezoneChange);
+            elements.timezoneSelect.addEventListener('blur', hideTimezoneSelect);
+        }
+        function toggleTimezoneSelect() {
+            if (state.isSelectMode) {
+                hideTimezoneSelect();
+            } else {
+                elements.timezoneDisplay.classList.add('hidden');
+                elements.timezoneSelect.classList.remove('hidden');
+                state.isSelectMode = true;
+                elements.changeBtn.setAttribute('aria-expanded', 'true');
+                setTimeout(() => {
+                    elements.timezoneSelect.focus();
+                    elements.timezoneSelect.click();
+                }, 0);
+            }
+        }
+        function hideTimezoneSelect() {
+            elements.timezoneDisplay.classList.remove('hidden');
+            elements.timezoneSelect.classList.add('hidden');
+            state.isSelectMode = false;
+            elements.changeBtn.setAttribute('aria-expanded', 'false');
+        }
+        function handleTimezoneChange(e) {
+            state.selectedTimezone = e.target.value;
+            localStorage.setItem('selectedTimezone', state.selectedTimezone);
+            if (state.selectedTimezone === 'auto') {
+                state.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            } else {
+                state.userTimezone = state.selectedTimezone;
+            }
+            updateTimezoneDisplay();
+            renderEvents();
+            hideTimezoneSelect();
+        }
+        // --- MISSING INIT FUNCTION ---
+        function init() {
+            initTheme();
+            if (state.selectedTimezone !== 'auto') {
+                state.userTimezone = state.selectedTimezone;
+            }
+            updateTimezoneDisplay();
+            populateTimezoneOptions();
+            renderEvents();
+            setupEventListeners();
+            elements.timezoneSelect.value = state.selectedTimezone;
         }
         document.addEventListener('DOMContentLoaded', init);
     </script>
