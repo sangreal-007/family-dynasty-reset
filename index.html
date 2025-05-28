@@ -1,20 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Dynasty Times</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --ios-blue: #007AFF;
             --ios-gray: #8E8E93;
@@ -30,7 +23,6 @@
             --text-primary: #FFFFFF;
             --text-secondary: #8E8E93;
         }
-
         [data-theme="light"] {
             --ios-background: #F2F2F7;
             --ios-card-bg: #FFFFFF;
@@ -40,7 +32,6 @@
             --ios-secondary-gray: #F2F2F7;
             --ios-tertiary-gray: #E5E5EA;
         }
-
         [data-theme="dark"] {
             --ios-background: #000000;
             --ios-card-bg: #1C1C1E;
@@ -50,7 +41,6 @@
             --ios-secondary-gray: #3A3A3C;
             --ios-tertiary-gray: #48484A;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
             background: var(--ios-background);
@@ -58,7 +48,6 @@
             min-height: 100vh;
             padding: 0;
         }
-
         .container {
             max-width: 430px;
             margin: 0 auto;
@@ -67,8 +56,6 @@
             padding-bottom: 20px;
             position: relative;
         }
-
-        /* Theme toggle button */
         .theme-toggle {
             position: absolute;
             top: 20px;
@@ -87,53 +74,34 @@
             gap: 8px;
             z-index: 100;
         }
-
-        .theme-toggle:hover {
-            background: var(--ios-secondary-gray);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
-        .theme-toggle svg {
-            width: 16px;
-            height: 16px;
-        }
-
+        .theme-toggle:hover { background: var(--ios-secondary-gray); }
+        .theme-toggle:active { transform: scale(0.95); }
+        .theme-toggle svg { width: 16px; height: 16px; }
         .header {
             text-align: center;
             padding: 24px 0 32px 0;
             margin-top: 16px;
         }
-
         .header h1 {
             font-size: 28px;
             font-weight: 700;
             letter-spacing: -0.02em;
             margin-bottom: 8px;
         }
-
-        .header p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-@media (max-width: 400px) {
-    .header p {
-        font-size: 12px;
-    }
-}
-
+        .header p,
         .header .note {
             font-size: 13px;
             color: var(--text-secondary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
-
+        @media (max-width: 400px) {
+            .header p,
+            .header .note { font-size: 12px; }
+        }
         .timezone-section {
             background: var(--ios-card-bg);
             border-radius: 16px;
@@ -141,31 +109,24 @@
             margin-bottom: 24px;
             border: 1px solid var(--ios-separator);
         }
-
         .timezone-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
         }
-
-        .timezone-info {
-            flex: 1;
-        }
-
+        .timezone-info { flex: 1; }
         .timezone-label {
             font-size: 15px;
             color: var(--text-secondary);
             display: block;
             margin-bottom: 4px;
         }
-
         .timezone-display {
             font-size: 20px;
             font-weight: 600;
             color: var(--text-primary);
         }
-
         .change-button {
             background: var(--ios-secondary-gray);
             border: none;
@@ -181,20 +142,12 @@
             gap: 8px;
             white-space: nowrap;
         }
-
-        .change-button:hover {
-            background: var(--ios-tertiary-gray);
-        }
-
-        .change-button:active {
-            transform: scale(0.95);
-        }
-
+        .change-button:hover { background: var(--ios-tertiary-gray); }
+        .change-button:active { transform: scale(0.95); }
         .change-button:focus-visible {
             outline: 2px solid var(--ios-blue);
             outline-offset: 2px;
         }
-
         .timezone-select {
             width: 100%;
             background: transparent;
@@ -208,69 +161,45 @@
             appearance: none;
             font-family: inherit;
         }
-
         .timezone-select:focus-visible {
             outline: none;
             box-shadow: 0 0 0 2px var(--ios-blue);
         }
-
         .timezone-select option {
             background: var(--ios-card-bg);
             color: var(--text-primary);
         }
-
         .events-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
             margin-bottom: 32px;
         }
-
         .event-card {
             background: var(--ios-card-bg);
             border-radius: 16px;
             padding: 20px;
             border: 1px solid var(--ios-separator);
         }
-
         .event-content {
             display: flex;
-            align-items: flex-start;
+            align-items: flex-end;
             justify-content: space-between;
             gap: 16px;
         }
-
         .event-info {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
-
-        .event-utc {
-            font-size: 13px;
+        .event-utc,
+        .special-days {
+            font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 4px;
         }
-
-        .event-title {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0;
-            color: var(--text-primary);
-        }
-
-        .event-time {
-            text-align: right;
-        }
-
-        .local-time {
-            font-size: 32px;
-            font-weight: 300;
-            letter-spacing: -0.02em;
-            color: var(--text-primary);
-        }
-
         .special-days {
-            font-size: 13px;
             color: var(--ios-orange);
             font-weight: 600;
             margin-bottom: 8px;
@@ -280,18 +209,46 @@
             border: 1px solid rgba(255, 149, 0, 0.2);
             display: inline-block;
         }
-
+        .event-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0;
+            color: var(--text-primary);
+        }
+        .event-time {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        .ios-clock-time {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+        }
+        .ios-clock-hour {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .ios-clock-ampm {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-left: 2px;
+            letter-spacing: 0.01em;
+            line-height: 1;
+        }
         .special-times {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 4px;
         }
-
-        .special-times .local-time {
-            font-size: 28px;
-        }
-
         .footer {
             text-align: center;
             margin-top: 32px;
@@ -300,33 +257,15 @@
             font-size: 13px;
             line-height: 1.5;
         }
-
-        /* Globe icon */
-        .globe-icon {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Hidden select state */
-        .timezone-select.hidden {
-            display: none;
-        }
-
-        .timezone-display.hidden {
-            display: none;
-        }
-
-        /* Responsive adjustments */
+        .globe-icon { width: 18px; height: 18px; }
+        .timezone-select.hidden { display: none; }
+        .timezone-display.hidden { display: none; }
         @media (max-width: 375px) {
-            .local-time {
-                font-size: 26px;
-            }
-            .special-times .local-time {
-                font-size: 20px;
-            }
-            .event-title {
-                font-size: 18px;
-            }
+            .ios-clock-hour { font-size: 26px; }
+            .ios-clock-ampm { font-size: 18px; }
+            .event-title { font-size: 18px; }
+            .event-utc,
+            .special-days { font-size: 11px; }
         }
     </style>
 </head>
@@ -344,7 +283,6 @@
             <p>Track server reset times for The Godfather: Family Dynasty</p>
             <div class="note">All server events run on UTC time</div>
         </div>
-
         <div class="timezone-section" role="region" aria-labelledby="timezoneHeading">
             <div class="timezone-header">
                 <div class="timezone-info">
@@ -362,34 +300,17 @@
                 <!-- Options will be populated by JavaScript -->
             </select>
         </div>
-
-        <div class="events-list" id="eventsList">
-            <!-- Events will be populated by JavaScript -->
-        </div>
-
+        <div class="events-list" id="eventsList"></div>
         <div class="footer">
             <p>All times are converted to your local or selected timezone.<br>Plan your gameplay accordingly.</p>
         </div>
     </div>
-
     <script>
         // Event definitions
         const events = [
-            {
-                title: 'Main Reset',
-                utcTime: '00:00 UTC',
-                time: '00:00'
-            },
-            {
-                title: 'License Refresh',
-                utcTime: '08:00 UTC',
-                time: '08:00'
-            },
-            {
-                title: 'NG Bonus',
-                utcTime: '22:00 UTC',
-                time: '22:00'
-            },
+            { title: 'Main Reset', utcTime: '00:00 UTC', time: '00:00' },
+            { title: 'License Refresh', utcTime: '08:00 UTC', time: '08:00' },
+            { title: 'NG Bonus', utcTime: '22:00 UTC', time: '22:00' },
             {
                 title: 'FCL/KCL events',
                 utcTime: '14:00 UTC | 21:00 UTC',
@@ -398,14 +319,12 @@
                 isSpecial: true
             }
         ];
-
         // App state
         const state = {
             userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             selectedTimezone: localStorage.getItem('selectedTimezone') || 'auto',
             isSelectMode: false
         };
-
         // DOM elements
         const elements = {
             timezoneDisplay: document.getElementById('timezoneDisplay'),
@@ -413,23 +332,18 @@
             changeBtn: document.getElementById('changeBtn'),
             eventsList: document.getElementById('eventsList')
         };
-
         // Theme handling
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const themeText = document.getElementById('themeText');
-        
-        // Initialize theme
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeUI(savedTheme);
         }
-
         function updateThemeUI(theme) {
             const sunIcon = themeIcon.querySelector('.sun-icon');
             const moonIcon = themeIcon.querySelector('.moon-icon');
-            
             if (theme === 'dark') {
                 sunIcon.style.display = 'block';
                 moonIcon.style.display = 'none';
@@ -440,47 +354,32 @@
                 themeText.textContent = 'Dark';
             }
         }
-
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeUI(newTheme);
         }
-
         themeToggle.addEventListener('click', toggleTheme);
 
-        // Initialize the app
+        // --- Timezone dropdown logic ---
         function init() {
             initTheme();
             if (state.selectedTimezone !== 'auto') {
                 state.userTimezone = state.selectedTimezone;
             }
-            
             updateTimezoneDisplay();
             populateTimezoneOptions();
             renderEvents();
             setupEventListeners();
-            
             elements.timezoneSelect.value = state.selectedTimezone;
         }
-
         function setupEventListeners() {
-            elements.changeBtn.addEventListener('click', debounce(toggleTimezoneSelect));
-            elements.timezoneSelect.addEventListener('change', debounce(handleTimezoneChange));
-            elements.timezoneSelect.addEventListener('blur', debounce(hideTimezoneSelect));
+            elements.changeBtn.addEventListener('click', toggleTimezoneSelect);
+            elements.timezoneSelect.addEventListener('change', handleTimezoneChange);
+            elements.timezoneSelect.addEventListener('blur', hideTimezoneSelect);
         }
-
-        function debounce(func, wait = 100) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-
         function toggleTimezoneSelect() {
             if (state.isSelectMode) {
                 hideTimezoneSelect();
@@ -492,42 +391,32 @@
                 elements.changeBtn.setAttribute('aria-expanded', 'true');
             }
         }
-
         function hideTimezoneSelect() {
             elements.timezoneDisplay.classList.remove('hidden');
             elements.timezoneSelect.classList.add('hidden');
             state.isSelectMode = false;
             elements.changeBtn.setAttribute('aria-expanded', 'false');
         }
-
         function handleTimezoneChange(e) {
             state.selectedTimezone = e.target.value;
             localStorage.setItem('selectedTimezone', state.selectedTimezone);
-            
             if (state.selectedTimezone === 'auto') {
                 state.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             } else {
                 state.userTimezone = state.selectedTimezone;
             }
-            
             updateTimezoneDisplay();
             renderEvents();
             hideTimezoneSelect();
         }
-
         function updateTimezoneDisplay() {
             elements.timezoneDisplay.textContent = state.userTimezone;
         }
-
         function getTimezoneOffset(timezone) {
             if (timezone === 'UTC') return '+00:00';
-            
             try {
                 const date = new Date();
-                const options = { 
-                    timeZone: timezone, 
-                    timeZoneName: 'shortOffset' 
-                };
+                const options = { timeZone: timezone, timeZoneName: 'shortOffset' };
                 const formatter = new Intl.DateTimeFormat('en-US', options);
                 const parts = formatter.formatToParts(date);
                 const offset = parts.find(part => part.type === 'timeZoneName').value;
@@ -536,7 +425,6 @@
                 return '+00:00';
             }
         }
-
         function populateTimezoneOptions() {
             const timezones = [
                 { value: 'auto', label: 'Auto-detect (Recommended)' },
@@ -577,50 +465,52 @@
                 { value: 'Australia/Sydney', label: 'Sydney/Melbourne' },
                 { value: 'Pacific/Auckland', label: 'New Zealand' }
             ];
-
             elements.timezoneSelect.innerHTML = '';
-            
             timezones.forEach(tz => {
                 const option = document.createElement('option');
                 option.value = tz.value;
-                
                 if (tz.value === 'auto') {
                     option.textContent = tz.label;
                 } else {
                     const offset = getTimezoneOffset(tz.value);
                     option.textContent = `${tz.label} (UTC${offset})`;
                 }
-                
                 elements.timezoneSelect.appendChild(option);
             });
         }
-
-        function convertUTCToLocal(utcTime) {
+        // --- iOS clock style time formatting ---
+        function convertUTCToLocalParts(utcTime) {
             try {
                 const [hours, minutes] = utcTime.split(':').map(Number);
                 const utcDate = new Date();
                 utcDate.setUTCHours(hours, minutes, 0, 0);
-                
                 const formatter = new Intl.DateTimeFormat('en-US', {
                     timeZone: state.userTimezone,
                     hour: 'numeric',
                     minute: '2-digit',
                     hour12: true
                 });
-                
-                return formatter.format(utcDate);
+                const parts = formatter.formatToParts(utcDate);
+                const hour = parts.find(p => p.type === 'hour').value;
+                const minute = parts.find(p => p.type === 'minute').value;
+                const dayPeriod = parts.find(p => p.type === 'dayPeriod').value;
+                return { hour, minute, dayPeriod };
             } catch (error) {
-                console.error('Error converting time:', error);
-                return '--:--';
+                return { hour: '--', minute: '--', dayPeriod: '' };
             }
         }
-
+        function iosClockTimeHTML(utcTime) {
+            const { hour, minute, dayPeriod } = convertUTCToLocalParts(utcTime);
+            return `<span class="ios-clock-time">
+                <span class="ios-clock-hour">${hour}:${minute}</span>
+                <span class="ios-clock-ampm">${dayPeriod}</span>
+            </span>`;
+        }
         function createEventCard(event) {
             const card = document.createElement('div');
             card.className = 'event-card';
-            
             if (event.isSpecial) {
-                const times = event.times.map(time => convertUTCToLocal(time));
+                const times = event.times.map(time => iosClockTimeHTML(time));
                 card.innerHTML = `
                     <div class="event-content">
                         <div class="event-info">
@@ -630,13 +520,13 @@
                         </div>
                         <div class="event-time">
                             <div class="special-times">
-                                ${times.map(time => `<div class="local-time">${time}</div>`).join('')}
+                                ${times.map(time => `<div>${time}</div>`).join('')}
                             </div>
                         </div>
                     </div>
                 `;
             } else {
-                const localTime = convertUTCToLocal(event.time);
+                const localTime = iosClockTimeHTML(event.time);
                 card.innerHTML = `
                     <div class="event-content">
                         <div class="event-info">
@@ -644,26 +534,21 @@
                             <div class="event-title">${event.title}</div>
                         </div>
                         <div class="event-time">
-                            <div class="local-time">${localTime}</div>
+                            ${localTime}
                         </div>
                     </div>
                 `;
             }
-            
             return card;
         }
-
         function renderEvents() {
             elements.eventsList.innerHTML = '';
-            
             events.forEach((event, index) => {
                 const eventCard = createEventCard(event);
                 eventCard.style.animationDelay = `${0.1 * index}s`;
                 elements.eventsList.appendChild(eventCard);
             });
         }
-
-        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
