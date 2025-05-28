@@ -109,13 +109,25 @@
             margin-bottom: 24px;
             border: 1px solid var(--ios-separator);
         }
-        .timezone-header {
+        .timezone-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
         }
-        .timezone-info { flex: 1; }
+        .timezone-info {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            max-width: 220px;
+        }
+        .timezone-display,
+        .timezone-select {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
         .timezone-label {
             font-size: 15px;
             color: var(--text-secondary);
@@ -181,33 +193,44 @@
             padding: 20px;
             border: 1px solid var(--ios-separator);
         }
+        /* --- IMPROVED EVENT CARD LAYOUT --- */
         .event-content {
             display: flex;
             align-items: flex-end;
-            justify-content: space-between;
-            gap: 16px;
+            justify-content: flex-start;
+            gap: 24px;
         }
         .event-info {
-            flex: 1;
+            flex: 0 1 220px;
+            min-width: 0;
+        }
+        .event-time {
+            flex: 0 0 auto;
+            min-width: 80px;
+            text-align: right;
             display: flex;
             flex-direction: column;
+            align-items: flex-end;
             justify-content: flex-end;
-        }
-        .event-utc,
-        .special-days {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
         }
         .special-days {
             color: var(--ios-orange);
             font-weight: 600;
-            margin-bottom: 8px;
-            padding: 4px 8px;
-            background: rgba(255, 149, 0, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 149, 0, 0.2);
+            margin-bottom: 4px;
+            padding: 4px 10px;
+            background: rgba(255, 149, 0, 0.13);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 149, 0, 0.22);
+            font-size: 13px;
             display: inline-block;
+            max-width: 100%;
+            box-shadow: 0 1px 2px 0 rgba(255,149,0,0.04);
+        }
+        .event-utc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            display: block;
         }
         .event-title {
             font-size: 22px;
@@ -215,13 +238,6 @@
             letter-spacing: -0.02em;
             margin-bottom: 0;
             color: var(--text-primary);
-        }
-        .event-time {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-end;
         }
         .ios-clock-time {
             display: flex;
@@ -257,6 +273,12 @@
             font-size: 13px;
             line-height: 1.5;
         }
+        .footer .signature {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            opacity: 0.8;
+        }
         .globe-icon { width: 18px; height: 18px; }
         .timezone-select.hidden { display: none; }
         .timezone-display.hidden { display: none; }
@@ -264,8 +286,8 @@
             .ios-clock-hour { font-size: 26px; }
             .ios-clock-ampm { font-size: 18px; }
             .event-title { font-size: 18px; }
-            .event-utc,
-            .special-days { font-size: 11px; }
+            .special-days, .event-utc { font-size: 11px; }
+            .timezone-info { max-width: 120px; }
         }
     </style>
 </head>
@@ -284,10 +306,11 @@
             <div class="note">All server events run on UTC time</div>
         </div>
         <div class="timezone-section" role="region" aria-labelledby="timezoneHeading">
-            <div class="timezone-header">
+            <div class="timezone-row">
                 <div class="timezone-info">
                     <span class="timezone-label" id="timezoneHeading">Your Timezone</span>
                     <div class="timezone-display" id="timezoneDisplay" aria-live="polite">Loading...</div>
+                    <select class="timezone-select hidden" id="timezoneSelect" aria-labelledby="timezoneHeading"></select>
                 </div>
                 <button class="change-button" id="changeBtn" aria-expanded="false" aria-controls="timezoneSelect">
                     <svg class="globe-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -296,13 +319,17 @@
                     Change
                 </button>
             </div>
-            <select class="timezone-select hidden" id="timezoneSelect" aria-labelledby="timezoneHeading">
-                <!-- Options will be populated by JavaScript -->
-            </select>
         </div>
         <div class="events-list" id="eventsList"></div>
         <div class="footer">
-            <p>All times are converted to your local or selected timezone.<br>Plan your gameplay accordingly.</p>
+            <p>
+                All times are converted to your local or selected timezone.<br>
+                Plan your gameplay accordingly.
+            </p>
+            <p class="signature">
+                This tool is a reference only — always double-check times in-game to be sure.<br>
+                Created by Sangreal for [MØB] Worldwide Mob · 102-3
+            </p>
         </div>
     </div>
     <script>
@@ -386,9 +413,12 @@
             } else {
                 elements.timezoneDisplay.classList.add('hidden');
                 elements.timezoneSelect.classList.remove('hidden');
-                elements.timezoneSelect.focus();
                 state.isSelectMode = true;
                 elements.changeBtn.setAttribute('aria-expanded', 'true');
+                setTimeout(() => {
+                    elements.timezoneSelect.focus();
+                    elements.timezoneSelect.click();
+                }, 0);
             }
         }
         function hideTimezoneSelect() {
