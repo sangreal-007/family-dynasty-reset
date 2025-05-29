@@ -327,7 +327,7 @@
                 Plan your gameplay accordingly.
             </p>
             <p class="signature">
-                This tool is a reference only — always double-check times in-game to be sure.<br>
+                This tool is a reference only.<br>Always double-check times in-game to be sure.<br>
                 Created by Sangreal for [MØB] Worldwide Mob · 102-3
             </p>
         </div>
@@ -434,12 +434,40 @@
             const found = timezones.find(tz => tz.value === tzValue);
             return found ? found.label : tzValue;
         }
-        function updateTimezoneDisplay() {
-            let displayValue = state.userTimezone;
-            if (state.selectedTimezone !== 'auto') {
-                displayValue = getTimezoneLabel(state.selectedTimezone);
+        function getTimezoneOffset(timezone) {
+            if (timezone === 'UTC') return '+00:00';
+            try {
+                const date = new Date();
+                // Use UTC time for offset calculation
+                const options = { timeZone: timezone, hour: '2-digit', minute: '2-digit', hour12: false };
+                const localParts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
+                const localHour = parseInt(localParts.find(p => p.type === 'hour').value, 10);
+                const localMinute = parseInt(localParts.find(p => p.type === 'minute').value, 10);
+                const utcHour = date.getUTCHours();
+                const utcMinute = date.getUTCMinutes();
+                let offsetMinutes = (localHour - utcHour) * 60 + (localMinute - utcMinute);
+                // Adjust for day wrap
+                if (offsetMinutes <= -720) offsetMinutes += 1440;
+                if (offsetMinutes > 720) offsetMinutes -= 1440;
+                const sign = offsetMinutes >= 0 ? '+' : '-';
+                const absMinutes = Math.abs(offsetMinutes);
+                const hours = String(Math.floor(absMinutes / 60)).padStart(2, '0');
+                const minutes = String(absMinutes % 60).padStart(2, '0');
+                return `${sign}${hours}:${minutes}`;
+            } catch (error) {
+                return '+00:00';
             }
-            elements.timezoneDisplay.textContent = displayValue;
+        }
+        function updateTimezoneDisplay() {
+            let displayValue, offset;
+            if (state.selectedTimezone === 'auto') {
+                displayValue = getTimezoneLabel(state.userTimezone);
+                offset = getTimezoneOffset(state.userTimezone);
+            } else {
+                displayValue = getTimezoneLabel(state.selectedTimezone);
+                offset = getTimezoneOffset(state.selectedTimezone);
+            }
+            elements.timezoneDisplay.textContent = `${displayValue} (UTC${offset})`;
         }
         function populateTimezoneOptions() {
             const timezones = [
@@ -485,27 +513,17 @@
             timezones.forEach(tz => {
                 const option = document.createElement('option');
                 option.value = tz.value;
+                let offset;
                 if (tz.value === 'auto') {
-                    option.textContent = tz.label;
+                    // Show user's current offset for auto
+                    offset = getTimezoneOffset(Intl.DateTimeFormat().resolvedOptions().timeZone);
+                    option.textContent = `${tz.label} (UTC${offset})`;
                 } else {
-                    const offset = getTimezoneOffset(tz.value);
+                    offset = getTimezoneOffset(tz.value);
                     option.textContent = `${tz.label} (UTC${offset})`;
                 }
                 elements.timezoneSelect.appendChild(option);
             });
-        }
-        function getTimezoneOffset(timezone) {
-            if (timezone === 'UTC') return '+00:00';
-            try {
-                const date = new Date();
-                const options = { timeZone: timezone, timeZoneName: 'shortOffset' };
-                const formatter = new Intl.DateTimeFormat('en-US', options);
-                const parts = formatter.formatToParts(date);
-                const offset = parts.find(part => part.type === 'timeZoneName').value;
-                return offset.replace(/^GMT/, '');
-            } catch (error) {
-                return '+00:00';
-            }
         }
         // --- iOS clock style time formatting ---
         function convertUTCToLocalParts(utcTime) {
@@ -615,11 +633,13 @@
             renderEvents();
             hideTimezoneSelect();
         }
-        // --- MISSING INIT FUNCTION ---
+        // --- INIT FUNCTION ---
         function init() {
             initTheme();
             if (state.selectedTimezone !== 'auto') {
                 state.userTimezone = state.selectedTimezone;
+            } else {
+                state.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             }
             updateTimezoneDisplay();
             populateTimezoneOptions();
