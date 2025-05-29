@@ -127,19 +127,41 @@
             word-break: break-all;
             overflow-wrap: anywhere;
         }
+
+        /* ✅ Mobile Fix for Change Button Alignment */
         @media (max-width: 500px) {
             .timezone-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
             }
+
+            .timezone-info {
+                flex: 1 1 60%;
+                min-width: 120px;
+            }
+
             .change-button {
-                align-self: flex-end;
+                flex: 1 1 auto;
+                text-align: right;
+                margin-top: 4px;
             }
+
             .timezone-display {
                 font-size: 17px;
             }
         }
+
+        /* Optional: Full-width button on very small screens */
+        @media (max-width: 375px) {
+            .change-button {
+                text-align: left;
+                width: 100%;
+            }
+        }
+
         .change-button {
             background: var(--ios-secondary-gray);
             border: none;
@@ -389,7 +411,6 @@
             updateThemeUI(newTheme);
         }
         themeToggle.addEventListener('click', toggleTheme);
-
         // --- Timezone dropdown logic ---
         function getTimezoneLabel(tzValue) {
             const timezones = [
